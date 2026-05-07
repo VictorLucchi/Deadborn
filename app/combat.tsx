@@ -15,10 +15,16 @@ const { GameEngine, criarPersonagem } = require('../engine/GameEngine');
 
 const ENEMY_SPRITES: Record<string, any> = {
   'Host Serpent': require('../assets/images/host-serpent.png'),
+  'Goblin': require('../assets/images/Goblin.png'),
+  'Broodhost Walker': require('../assets/images/BroodHost-Walker.png'),
+  'Hunter': require('../assets/images/hunter.png'),
 };
 
 const BATTLE_BG: Record<string, any> = {
   'Host Serpent': require('../assets/images/floresta.jpg'),
+  'Goblin': require('../assets/images/esgoto.jpg'),
+  'Broodhost Walker': require('../assets/images/pantano-evo.jpg'),
+  'Hunter': require('../assets/images/floresta-rostos.png'),
 };
 
 const DEFAULT_BG = require('../assets/images/floresta.jpg');
