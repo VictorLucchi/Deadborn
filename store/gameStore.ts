@@ -6,6 +6,9 @@ interface GameStore {
   setJogador: (nome: string, classeId: string) => void;
   resetJogador: () => void;
   restaurarJogador: () => void;
+  distribuirPonto: (stat: string) => void;
+  equiparArma: (arma: any) => void;
+  usarItem: (item: any) => Promise<string | null>;
 }
 
 export const useGameStore = create<GameStore>((set, get) => ({
@@ -30,5 +33,24 @@ export const useGameStore = create<GameStore>((set, get) => ({
     jogador.quantidadeMarcas = 0;
     jogador.turnosDefesa = 0;
     set({ jogador });
+  },
+  distribuirPonto: (stat: string) => {
+    const jogador = get().jogador;
+    if (!jogador) return;
+    jogador.distribuirPonto(stat);
+    set({ jogador });
+  },
+  equiparArma: (arma: any) => {
+    const jogador = get().jogador;
+    if (!jogador) return;
+    jogador.equiparArma(arma);
+    set({ jogador });
+  },
+  usarItem: async (item: any) => {
+    const jogador = get().jogador;
+    if (!jogador) return null;
+    const resultado = await item.usar(jogador);
+    set({ jogador });
+    return resultado?.mensagem ?? null;
   },
 }));

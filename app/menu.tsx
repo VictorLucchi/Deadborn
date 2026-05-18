@@ -37,6 +37,9 @@ export default function MenuScreen() {
           <Text style={styles.barValue}>{jogador.mana}/{jogador.manaMax}</Text>
         </View>
         <Text style={styles.xpText}>XP: {jogador.xp}/30</Text>
+        {jogador.pontosDisponiveis > 0 && (
+          <Text style={styles.pontosText}>⬆ {jogador.pontosDisponiveis} ponto{jogador.pontosDisponiveis > 1 ? 's' : ''} disponível{jogador.pontosDisponiveis > 1 ? 'is' : ''} — acesse FICHA</Text>
+        )}
       </View>
 
       <View style={styles.divider} />
@@ -54,6 +57,12 @@ export default function MenuScreen() {
           desc="Lute contra outro sobrevivente"
           onPress={() => router.push('/pvp-setup')}
           cor={Colors.cerulean}
+        />
+        <MenuItem
+          label="FICHA  —  STATUS"
+          desc="Atributos, habilidades e inventário"
+          onPress={() => router.push('/status')}
+          cor={Colors.gold}
         />
       </View>
 
@@ -91,6 +100,7 @@ const styles = StyleSheet.create({
   barFill: { height: '100%' },
   barValue: { fontFamily: 'SpaceMono', fontSize: 10, color: Colors.textDim, width: 60, textAlign: 'right' },
   xpText: { fontFamily: 'SpaceMono', fontSize: 10, color: Colors.xp },
+  pontosText: { fontFamily: 'SpaceMono', fontSize: 10, color: Colors.gold },
   divider: { height: 1, backgroundColor: Colors.border },
   menuTitle: { fontFamily: 'SpaceMono', fontSize: 11, color: Colors.textDim, textAlign: 'center', letterSpacing: 3 },
   menuItems: { gap: 12 },
