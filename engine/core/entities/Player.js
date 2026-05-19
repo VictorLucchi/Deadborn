@@ -11,11 +11,20 @@ class Player extends Character {
         this.habilidadesEvoluidas = {};
     }
 
+    // XP necessário para o próximo nível (curva progressiva)
+    getXpNecessario() {
+        return 30 + (this.nivel - 1) * 20; // Ex: Nv1: 30, Nv2: 50, Nv3: 70...
+    }
+
     recuperarMana(valor) { this.mana = Math.min(this.mana + valor, this.manaMax); }
 
     ganharXp(valor) {
         this.xp += valor;
-        if (this.xp >= 30) { this.subirNivel(); return { levelUp: true }; }
+        const xpNecessario = this.getXpNecessario();
+        if (this.xp >= xpNecessario) { 
+            this.subirNivel(); 
+            return { levelUp: true }; 
+        }
         return { levelUp: false };
     }
 

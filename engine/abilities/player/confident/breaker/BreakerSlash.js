@@ -4,7 +4,11 @@ class BreakerSlash extends AttackAbility {
     executar(usuario, alvo) {
         const resultado = this.rolarDano(usuario);
         alvo.receberDano(resultado.dano);
-        if (resultado.critico) { alvo.aplicarMarcas(3); resultado.marcado = true; }
+        // Agora aplica marcas no PRÓPRIO usuário ao critar
+        if (resultado.critico) { 
+            usuario.aplicarMarcas(3); 
+            resultado.marcadoUsuario = true; 
+        }
         return resultado;
     }
 }

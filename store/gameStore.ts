@@ -18,12 +18,15 @@ export const useGameStore = create<GameStore>((set, get) => ({
   restaurarJogador: () => {
     const jogador = get().jogador;
     if (!jogador) return;
-    const xpAtual = jogador.xp;
-    const nivelAtual = jogador.nivel;
-    jogador.vida = jogador.vidaMax;
-    jogador.mana = jogador.manaMax;
-    jogador.xp = xpAtual;
-    jogador.nivel = nivelAtual;
+    
+    // Se o jogador morreu, reseta vida e mana
+    if (jogador.vida <= 0) {
+        jogador.vida = jogador.vidaMax;
+        jogador.mana = jogador.manaMax;
+    }
+    // Caso contrário, mantém a vida e mana atuais (não faz nada)
+
+    // Reseta status temporários e marcas
     jogador.status = {
       marcado: false, atordoado: false, defendendo: false,
       envenenado: false, sangrando: false, queimado: false,
@@ -32,6 +35,7 @@ export const useGameStore = create<GameStore>((set, get) => ({
     jogador.danoVeneno = 0;
     jogador.quantidadeMarcas = 0;
     jogador.turnosDefesa = 0;
+    
     set({ jogador });
   },
   distribuirPonto: (stat: string) => {

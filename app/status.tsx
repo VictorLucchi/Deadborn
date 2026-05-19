@@ -23,6 +23,8 @@ export default function StatusScreen() {
   const [aba, setAba] = useState<Aba>('FICHA');
   const [toast, setToast] = useState<string | null>(null);
   const [pendente, setPendente] = useState<Record<string, number>>({});
+  const [itemEmUso, setItemEmUso] = useState<any>(null);
+  const [habilidadeEscolha, setHabilidadeEscolha] = useState<number | null>(null);
 
   if (!jogador) { router.replace('/'); return null; }
 
@@ -47,7 +49,9 @@ export default function StatusScreen() {
     mostrarToast('Atributos confirmados!');
   }
 
-  const xpPct = Math.min(jogador.xp / 30, 1);
+  // Forçar a chamada do método se ele existir no protótipo ou na instância
+  const xpNecessario = typeof jogador.getXpNecessario === 'function' ? jogador.getXpNecessario() : 30;
+  const xpPct = Math.min(jogador.xp / xpNecessario, 1);
   const hpPct = Math.min(jogador.vida / jogador.vidaMax, 1);
   const mpPct = Math.min(jogador.mana / jogador.manaMax, 1);
 
@@ -70,8 +74,25 @@ export default function StatusScreen() {
   }
 
   async function handleUsar(item: any) {
-    const msg = await usarItem(item);
-    if (msg) mostrarToast(msg);
+    // Abyssal Blood é do tipo 'consumivel', Mutated Core é 'material'
+    if (item.nome === 'Mutated Core' || item.nome === 'Abyssal Blood') {
+      setItemEmUso(item);
+      setHabilidadeEscolha(null);
+    } else {
+      const msg = await usarItem(item);
+      if (msg) mostrarToast(msg);
+    }
+  }
+
+  async function confirmarEvolucao(indiceHabilidade: number) {
+    if (!itemEmUso) return;
+    const msg = await usarItem(itemEmUso);
+    if (msg) {
+      const resultado = await itemEmUso.usar(jogador, indiceHabilidade);
+      if (resultado?.mensagem) mostrarToast(resultado.mensagem);
+    }
+    setItemEmUso(null);
+    setHabilidadeEscolha(null);
   }
 
   return (
@@ -93,7 +114,7 @@ export default function StatusScreen() {
       <View style={s.barsRow}>
         <MiniBar label="HP" value={jogador.vida} max={jogador.vidaMax} pct={hpPct} color={Colors.hp} bg={Colors.hpBg} />
         <MiniBar label="MP" value={jogador.mana} max={jogador.manaMax} pct={mpPct} color={Colors.mp} bg={Colors.mpBg} />
-        <MiniBar label="XP" value={jogador.xp} max={30} pct={xpPct} color={Colors.xp} bg="#1A0A2A" />
+        <MiniBar label="XP" value={jogador.xp} max={xpNecessario} pct={xpPct} color={Colors.xp} bg="#1A0A2A" />
       </View>
 
       {/* Abas */}
@@ -189,7 +210,42 @@ export default function StatusScreen() {
           </View>
         )}
 
-        {/* ── INVENTÁRIO ── */}
+      {/* Modal de escolha de habilidade */}
+      <Modal visible={!!itemEmUso} transparent animationType="fade">
+        <View style={s.modalOverlay}>
+          <View style={s.modalBox}>
+            <Text style={s.modalTitle}>Escolha uma habilidade para {itemEmUso?.nome === 'Mutated Core' ? 'EVOLUIR' : 'FORTALECER'}</Text>
+            <ScrollView style={s.modalScroll}>
+              {jogador?.habilidades?.map((h: any, i: number) => (
+                <TouchableOpacity
+                  key={i}
+                  style={[s.modalItem, habilidadeEscolha === i && s.modalItemSelected]}
+                  onPress={() => setHabilidadeEscolha(i)}
+                >
+                  <Text style={s.modalItemText}>{h.nome}</Text>
+                </TouchableOpacity>
+              ))}
+            </ScrollView>
+            <View style={s.modalActions}>
+              <TouchableOpacity
+                style={[s.modalBtn, { borderColor: Colors.cerulean }]}
+                onPress={() => { setItemEmUso(null); setHabilidadeEscolha(null); }}
+              >
+                <Text style={[s.modalBtnText, { color: Colors.cerulean }]}>✕ CANCELAR</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={[s.modalBtn, habilidadeEscolha !== null ? { borderColor: Colors.xp } : { borderColor: Colors.textDim }]}
+                onPress={() => habilidadeEscolha !== null && confirmarEvolucao(habilidadeEscolha)}
+                disabled={habilidadeEscolha === null}
+              >
+                <Text style={[s.modalBtnText, habilidadeEscolha !== null ? { color: Colors.xp } : { color: Colors.textDim }]}>✓ CONFIRMAR</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
+
+      {/* ── INVENTÁRIO ── */}
         {aba === 'INVENTÁRIO' && (
           <View style={s.section}>
             {jogador.armaEquipada && (
@@ -363,14 +419,16 @@ const s = StyleSheet.create({
   statValue: { fontFamily: 'SpaceMono', fontSize: 18, color: Colors.textWhite, width: 30 },
   statDesc: { fontFamily: 'SpaceMono', fontSize: 10, color: Colors.textDim, flex: 1 },
   statPendente: { fontFamily: 'SpaceMono', fontSize: 14, color: Colors.xp, marginRight: 4 },
-  statBtns: { flexDirection: 'row', gap: 6 },
-  btnMenos: { width: 32, height: 32, borderWidth: 1, borderColor: Colors.crimson, alignItems: 'center', justifyContent: 'center' },
-  btnMenosText: { fontFamily: 'SpaceMono', fontSize: 18, color: Colors.crimson, lineHeight: 22 },
+  statBtns: { flexDirection: 'row', gap: 8 },
+  btnMenos: { width: 44, height: 44, borderWidth: 2, borderColor: Colors.crimson, backgroundColor: 'rgba(220, 53, 69, 0.15)', alignItems: 'center', justifyContent: 'center', borderRadius: 4 },
+  btnMenosText: { fontFamily: 'SpaceMono', fontSize: 22, color: Colors.crimson, lineHeight: 24, fontWeight: 'bold' },
+  btnPonto: { width: 44, height: 44, borderWidth: 2, borderColor: Colors.xp, backgroundColor: 'rgba(255, 193, 7, 0.2)', alignItems: 'center', justifyContent: 'center', borderRadius: 4 },
+  btnPontoText: { fontFamily: 'SpaceMono', fontSize: 22, color: Colors.xp, lineHeight: 24, fontWeight: 'bold' },
   btnConfirmar: {
-    borderWidth: 1, borderColor: Colors.xp, backgroundColor: Colors.bgPanel,
-    paddingVertical: 14, alignItems: 'center', marginTop: 4,
+    borderWidth: 2, borderColor: Colors.xp, backgroundColor: 'rgba(255, 193, 7, 0.15)',
+    paddingVertical: 14, alignItems: 'center', marginTop: 8, borderRadius: 4,
   },
-  btnConfirmarText: { fontFamily: 'SpaceMono', fontSize: 13, color: Colors.xp, letterSpacing: 2 },
+  btnConfirmarText: { fontFamily: 'SpaceMono', fontSize: 13, color: Colors.xp, letterSpacing: 2, fontWeight: 'bold' },
 
   infoRow: { flexDirection: 'row', justifyContent: 'space-between', paddingVertical: 8, borderBottomWidth: 1, borderBottomColor: Colors.border },
   infoLabel: { fontFamily: 'SpaceMono', fontSize: 11, color: Colors.textDim },
@@ -415,4 +473,14 @@ const s = StyleSheet.create({
     alignItems: 'center',
   },
   btnVoltarText: { fontFamily: 'SpaceMono', fontSize: 13, color: Colors.cerulean, letterSpacing: 2 },
+  modalOverlay: { flex: 1, backgroundColor: 'rgba(0,0,0,0.85)', justifyContent: 'center', alignItems: 'center' },
+  modalBox: { backgroundColor: Colors.bgPanel, borderWidth: 3, borderColor: Colors.cerulean, padding: 20, width: '88%', maxHeight: '75%', borderRadius: 6 },
+  modalTitle: { fontFamily: 'SpaceMono', fontSize: 13, color: Colors.cerulean, marginBottom: 16, letterSpacing: 2, fontWeight: 'bold', textAlign: 'center' },
+  modalScroll: { maxHeight: 320, marginBottom: 16 },
+  modalItem: { borderWidth: 2, borderColor: Colors.border, padding: 14, marginBottom: 8, backgroundColor: Colors.bg, borderRadius: 4 },
+  modalItemSelected: { borderColor: Colors.xp, backgroundColor: 'rgba(255, 193, 7, 0.15)', borderWidth: 3 },
+  modalItemText: { fontFamily: 'SpaceMono', fontSize: 12, color: Colors.textPrimary, fontWeight: '600' },
+  modalActions: { flexDirection: 'row', gap: 10 },
+  modalBtn: { flex: 1, borderWidth: 2, paddingVertical: 12, alignItems: 'center', borderRadius: 4 },
+  modalBtnText: { fontFamily: 'SpaceMono', fontSize: 12, letterSpacing: 1, fontWeight: 'bold' },
 });

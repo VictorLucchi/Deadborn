@@ -12,8 +12,11 @@ export default function MenuScreen() {
 
   if (!jogador) { router.replace('/'); return null; }
 
-  const hpPct = jogador.vida / jogador.vidaMax;
-  const mpPct = jogador.mana / jogador.manaMax;
+  // Cálculos dinâmicos das barras
+  const hpPct = Math.min(jogador.vida / jogador.vidaMax, 1);
+  const mpPct = Math.min(jogador.mana / jogador.manaMax, 1);
+  const xpNecessario = typeof jogador.getXpNecessario === 'function' ? jogador.getXpNecessario() : 30;
+  const xpPct = Math.min(jogador.xp / xpNecessario, 1);
 
   return (
     <View style={styles.container}>
@@ -22,21 +25,35 @@ export default function MenuScreen() {
           <Text style={styles.playerName}>{jogador.nome}</Text>
           <Text style={styles.playerLevel}>Nv.{jogador.nivel}</Text>
         </View>
+        
+        {/* Barra de HP */}
         <View style={styles.barRow}>
           <Text style={styles.barLabel}>HP</Text>
-          <View style={styles.barBg}>
+          <View style={[styles.barBg, { backgroundColor: Colors.hpBg }]}>
             <View style={[styles.barFill, { width: `${hpPct * 100}%`, backgroundColor: Colors.hp }]} />
           </View>
           <Text style={styles.barValue}>{jogador.vida}/{jogador.vidaMax}</Text>
         </View>
+
+        {/* Barra de MP */}
         <View style={styles.barRow}>
           <Text style={styles.barLabel}>MP</Text>
-          <View style={styles.barBg}>
+          <View style={[styles.barBg, { backgroundColor: Colors.mpBg }]}>
             <View style={[styles.barFill, { width: `${mpPct * 100}%`, backgroundColor: Colors.mp }]} />
           </View>
           <Text style={styles.barValue}>{jogador.mana}/{jogador.manaMax}</Text>
         </View>
-        <Text style={styles.xpText}>XP: {jogador.xp}/30</Text>
+
+        {/* Barra de XP Dinâmica */}
+        <View style={styles.barRow}>
+          <Text style={styles.barLabel}>XP</Text>
+          <View style={[styles.barBg, { backgroundColor: '#1A0A2A' }]}>
+            <View style={[styles.barFill, { width: `${xpPct * 100}%`, backgroundColor: Colors.xp }]} />
+          </View>
+          <Text style={styles.barValue}>{jogador.xp}/{xpNecessario}</Text>
+        </View>
+
+        {/* Pontos Disponíveis */}
         {jogador.pontosDisponiveis > 0 && (
           <Text style={styles.pontosText}>⬆ {jogador.pontosDisponiveis} ponto{jogador.pontosDisponiveis > 1 ? 's' : ''} disponível{jogador.pontosDisponiveis > 1 ? 'is' : ''} — acesse FICHA</Text>
         )}
@@ -89,18 +106,17 @@ const styles = StyleSheet.create({
     borderColor: Colors.border,
     backgroundColor: Colors.bgPanel,
     padding: 16,
-    gap: 8,
+    gap: 10,
   },
-  playerHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
+  playerHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 4 },
   playerName: { fontFamily: 'SpaceMono', fontSize: 18, color: Colors.textWhite, letterSpacing: 2 },
   playerLevel: { fontFamily: 'SpaceMono', fontSize: 12, color: Colors.gold },
   barRow: { flexDirection: 'row', alignItems: 'center', gap: 8 },
   barLabel: { fontFamily: 'SpaceMono', fontSize: 10, color: Colors.textDim, width: 20 },
-  barBg: { flex: 1, height: 8, backgroundColor: Colors.border, overflow: 'hidden' },
+  barBg: { flex: 1, height: 10, overflow: 'hidden' },
   barFill: { height: '100%' },
   barValue: { fontFamily: 'SpaceMono', fontSize: 10, color: Colors.textDim, width: 60, textAlign: 'right' },
-  xpText: { fontFamily: 'SpaceMono', fontSize: 10, color: Colors.xp },
-  pontosText: { fontFamily: 'SpaceMono', fontSize: 10, color: Colors.gold },
+  pontosText: { fontFamily: 'SpaceMono', fontSize: 10, color: Colors.gold, marginTop: 4 },
   divider: { height: 1, backgroundColor: Colors.border },
   menuTitle: { fontFamily: 'SpaceMono', fontSize: 11, color: Colors.textDim, textAlign: 'center', letterSpacing: 3 },
   menuItems: { gap: 12 },
