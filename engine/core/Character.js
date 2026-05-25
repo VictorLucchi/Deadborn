@@ -1,6 +1,7 @@
 class Character {
-    constructor(nome, vidaMax, manaMax = 0, forca = 0, agilidade = 0, vigor = 0, controle = 0){
+    constructor(nome, vidaMax, manaMax = 0, forca = 0, agilidade = 0, vigor = 0, controle = 0, genero = 'male'){
         this.nome = nome;
+        this.genero = genero;
         this.vidaMax = vigor * 5 + 30;
         this.vida = this.vidaMax;
         this.manaMax = controle * 2 + 15;

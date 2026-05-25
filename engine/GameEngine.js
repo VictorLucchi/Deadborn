@@ -7,9 +7,9 @@ const BroodhostWalker = require('./core/entities/enemies/BroodhostWalker');
 const Confident = require('./core/entities/classes/Confident');
 const Vanguard = require('./core/entities/classes/Vanguard');
 
-function criarPersonagem(nome, classeId) {
-    if (classeId === '1') return new Confident(nome);
-    return new Vanguard(nome);
+function criarPersonagem(nome, classeId, genero = 'male') {
+    if (classeId === '1') return new Confident(nome, genero);
+    return new Vanguard(nome, genero);
 }
 
 function criarInimigo(dificuldade) {

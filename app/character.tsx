@@ -30,12 +30,13 @@ export default function CharacterScreen() {
   const setJogador = useGameStore(s => s.setJogador);
   const [nome, setNome] = useState('');
   const [classeSelecionada, setClasseSelecionada] = useState<string | null>(null);
+  const [genero, setGenero] = useState<'male' | 'female'>('male');
   const [erro, setErro] = useState('');
 
   function confirmar() {
     if (!nome.trim()) { setErro('Digite um nome.'); return; }
     if (!classeSelecionada) { setErro('Escolha uma classe.'); return; }
-    setJogador(nome.trim(), classeSelecionada);
+    setJogador(nome.trim(), classeSelecionada, genero);
     router.replace('/menu');
   }
 
@@ -53,6 +54,22 @@ export default function CharacterScreen() {
           placeholderTextColor={Colors.textDim}
           maxLength={20}
         />
+      </View>
+
+      <Text style={styles.label}>GÊNERO</Text>
+      <View style={styles.generoContainer}>
+        <TouchableOpacity
+          style={[styles.generoBtn, genero === 'male' && styles.generoBtnSelected]}
+          onPress={() => setGenero('male')}
+        >
+          <Text style={[styles.generoText, genero === 'male' && styles.generoTextSelected]}>MASCULINO</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={[styles.generoBtn, genero === 'female' && styles.generoBtnSelected]}
+          onPress={() => setGenero('female')}
+        >
+          <Text style={[styles.generoText, genero === 'female' && styles.generoTextSelected]}>FEMININO</Text>
+        </TouchableOpacity>
       </View>
 
       <Text style={styles.label}>CLASSE</Text>
@@ -120,6 +137,18 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingVertical: 12,
   },
+  generoContainer: { flexDirection: 'row', gap: 8, marginBottom: 8 },
+  generoBtn: {
+    flex: 1,
+    borderWidth: 1,
+    borderColor: Colors.border,
+    backgroundColor: Colors.bgPanel,
+    paddingVertical: 12,
+    alignItems: 'center',
+  },
+  generoBtnSelected: { borderColor: Colors.cerulean, backgroundColor: Colors.bgCard },
+  generoText: { fontFamily: 'SpaceMono', fontSize: 12, color: Colors.textDim },
+  generoTextSelected: { color: Colors.cerulean },
   classeCard: {
     borderWidth: 1,
     borderColor: Colors.border,

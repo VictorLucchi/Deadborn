@@ -3,7 +3,7 @@ const { criarPersonagem } = require('../engine/GameEngine');
 
 interface GameStore {
   jogador: any | null;
-  setJogador: (nome: string, classeId: string) => void;
+  setJogador: (nome: string, classeId: string, genero: string) => void;
   resetJogador: () => void;
   restaurarJogador: () => void;
   distribuirPonto: (stat: string) => void;
@@ -13,7 +13,7 @@ interface GameStore {
 
 export const useGameStore = create<GameStore>((set, get) => ({
   jogador: null,
-  setJogador: (nome, classeId) => set({ jogador: criarPersonagem(nome, classeId) }),
+  setJogador: (nome, classeId, genero) => set({ jogador: criarPersonagem(nome, classeId, genero) }),
   resetJogador: () => set({ jogador: null }),
   restaurarJogador: () => {
     const jogador = get().jogador;

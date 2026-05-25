@@ -20,6 +20,11 @@ const ENEMY_SPRITES: Record<string, any> = {
   'Hunter': require('../assets/images/hunter.png'),
 };
 
+const PLAYER_SPRITES: Record<string, any> = {
+  'Vanguard-male': require('../assets/images/vanguard-male.png'),
+  'Vanguard-female': require('../assets/images/vanguard-female.png'),
+};
+
 const BATTLE_BG: Record<string, any> = {
   'Host Serpent': require('../assets/images/floresta.jpg'),
   'Goblin': require('../assets/images/esgoto.jpg'),
@@ -177,7 +182,7 @@ export default function CombatScreen() {
       const novoEstado = engine.iniciarPvE(jogador, null, dif);
       setEstado({ ...novoEstado });
     } else if (params.modo === 'pvp') {
-      const j2 = criarPersonagem(params.nome2 as string, params.classe2 as string);
+      const j2 = criarPersonagem(params.nome2 as string, params.classe2 as string, params.genero2 as string);
       const novoEstado = engine.iniciarPvP(jogador, j2);
       setEstado({ ...novoEstado });
     }
@@ -229,6 +234,16 @@ export default function CombatScreen() {
               isActive={!isPvP || jogadorAtual === estado.jogadores[0]}
               isEnemy={false}
             />
+            {(() => {
+              const char = isPvP ? estado.jogadores[0] : jogador;
+              const className = char?.constructor?.name;
+              if (className === 'Vanguard') {
+                const spriteKey = `Vanguard-${char.genero || 'male'}`;
+                const playerSprite = PLAYER_SPRITES[spriteKey];
+                if (playerSprite) return <Image source={playerSprite} style={styles.playerSprite} resizeMode="contain" />;
+              }
+              return null;
+            })()}
           </View>
           <View style={styles.cardRight}>
             <CharCard
@@ -236,8 +251,19 @@ export default function CombatScreen() {
               isActive={isPvP && jogadorAtual === estado.jogadores[1]}
               isEnemy={!isPvP}
             />
-            {!isPvP && sprite && (
-              <Image source={sprite} style={styles.enemySprite} resizeMode="contain" />
+            {isPvP ? (
+              (() => {
+                const char = estado.jogadores[1];
+                const className = char?.constructor?.name;
+                if (className === 'Vanguard') {
+                  const spriteKey = `Vanguard-${char.genero || 'male'}`;
+                  const playerSprite = PLAYER_SPRITES[spriteKey];
+                  if (playerSprite) return <Image source={playerSprite} style={styles.playerSprite} resizeMode="contain" />;
+                }
+                return null;
+              })()
+            ) : (
+              sprite && <Image source={sprite} style={styles.enemySprite} resizeMode="contain" />
             )}
           </View>
         </View>
@@ -348,6 +374,7 @@ const styles = StyleSheet.create({
   battlefieldImg: { borderRadius: 8, opacity: 0.85 },
   overlay: { ...StyleSheet.absoluteFillObject, backgroundColor: 'rgba(8,8,16,0.45)', borderRadius: 8 },
   enemySprite: { width: '100%', height: 143, marginTop: 6 },
+  playerSprite: { width: '100%', height: 143, marginTop: 6 },
   charsContainer: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-end', paddingHorizontal: 8, paddingBottom: 8, height: 200 },
   cardLeft: { position: 'absolute', bottom: 8, left: 8 },
   cardRight: { position: 'absolute', top: 8, right: 8 },

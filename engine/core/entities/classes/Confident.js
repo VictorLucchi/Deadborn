@@ -11,8 +11,8 @@ const AbyssalBlood = require('../../../items/drops/AbyssalBlood');
 const MutatedCore = require('../../../items/drops/MutatedCore');
 
 class Confident extends Player {
-    constructor(nome) {
-        super(nome, 100, 14, 7, 14, 5);
+    constructor(nome, genero = 'male') {
+        super(nome, 100, 14, 7, 14, 5, genero);
         this.habilidades = [new BasicAttack(), new BreakerSlash(), new BreakerFinisher(), new Rest()];
         const espada = new IronSword();
         this.adicionarItem(espada);

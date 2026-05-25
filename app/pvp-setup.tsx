@@ -12,12 +12,13 @@ export default function PvPSetupScreen() {
   const router = useRouter();
   const [nome, setNome] = useState('');
   const [classe, setClasse] = useState<string | null>(null);
+  const [genero, setGenero] = useState<'male' | 'female'>('male');
   const [erro, setErro] = useState('');
 
   function iniciar() {
     if (!nome.trim()) { setErro('Digite um nome.'); return; }
     if (!classe) { setErro('Escolha uma classe.'); return; }
-    router.push({ pathname: '/combat', params: { modo: 'pvp', nome2: nome.trim(), classe2: classe } });
+    router.push({ pathname: '/combat', params: { modo: 'pvp', nome2: nome.trim(), classe2: classe, genero2: genero } });
   }
 
   return (
@@ -34,6 +35,22 @@ export default function PvPSetupScreen() {
         placeholderTextColor={Colors.textDim}
         maxLength={20}
       />
+
+      <Text style={styles.label}>GÊNERO</Text>
+      <View style={styles.generoContainer}>
+        <TouchableOpacity
+          style={[styles.generoBtn, genero === 'male' && styles.generoBtnSelected]}
+          onPress={() => setGenero('male')}
+        >
+          <Text style={[styles.generoText, genero === 'male' && styles.generoTextSelected]}>MASCULINO</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={[styles.generoBtn, genero === 'female' && styles.generoBtnSelected]}
+          onPress={() => setGenero('female')}
+        >
+          <Text style={[styles.generoText, genero === 'female' && styles.generoTextSelected]}>FEMININO</Text>
+        </TouchableOpacity>
+      </View>
 
       <Text style={styles.label}>CLASSE</Text>
       {CLASSES.map(c => (
@@ -69,6 +86,18 @@ const styles = StyleSheet.create({
     color: Colors.textWhite, fontFamily: 'SpaceMono', fontSize: 14,
     paddingHorizontal: 16, paddingVertical: 12,
   },
+  generoContainer: { flexDirection: 'row', gap: 8, marginBottom: 8 },
+  generoBtn: {
+    flex: 1,
+    borderWidth: 1,
+    borderColor: Colors.border,
+    backgroundColor: Colors.bgPanel,
+    paddingVertical: 12,
+    alignItems: 'center',
+  },
+  generoBtnSelected: { borderColor: Colors.cerulean, backgroundColor: Colors.bgCard },
+  generoText: { fontFamily: 'SpaceMono', fontSize: 12, color: Colors.textDim },
+  generoTextSelected: { color: Colors.cerulean },
   classeCard: {
     borderWidth: 1, borderColor: Colors.border, backgroundColor: Colors.bgPanel,
     padding: 16,

@@ -10,8 +10,8 @@ const HealthPotion = require('../../../items/consumables/HealthPotion');
 const ManaPotion = require('../../../items/consumables/ManaPotion');
 
 class Vanguard extends Player {
-    constructor(nome) {
-        super(nome, 100, 12, 14, 6, 8);
+    constructor(nome, genero = 'male') {
+        super(nome, 100, 12, 14, 6, 8, genero);
         this.habilidades = [new BasicAttack(), new QuickStrike(), new SwiftSlash(), new BlitzAssault(), new Momentum()];
         this.momentum = 0;
         this.agilidadeOriginal = this.agilidade;
