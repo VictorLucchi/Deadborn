@@ -23,12 +23,10 @@ export default function HomeScreen() {
   const glowStyle = useAnimatedStyle(() => ({ opacity: glowOpacity.value }));
 
   return (
-    <ImageBackground source={require('@/assets/images/Menu.jpg')} style={styles.container} resizeMode="contain">
+    <ImageBackground source={require('@/assets/images/Menu.jpg')} style={styles.container} resizeMode="cover">
       <View style={styles.topDecor} />
 
       <View style={styles.titleContainer}>
-        <Animated.Text style={[styles.titleGlow, glowStyle]}>DEADBORN</Animated.Text>
-        <Text style={styles.title}>DEADBORN</Text>
         {subtitleVisible && (
           <Text style={styles.subtitle}>— The Beginning —</Text>
         )}
@@ -50,6 +48,8 @@ export default function HomeScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    width: '100%',
+    height: '100%',
     alignItems: 'center',
     justifyContent: 'space-between',
     paddingVertical: 60,
@@ -82,6 +82,7 @@ const styles = StyleSheet.create({
     letterSpacing: 12,
   },
   subtitle: {
+    marginTop: 2,
     fontFamily: 'SpaceMono',
     fontSize: 14,
     color: Colors.cerulean,
@@ -94,16 +95,16 @@ const styles = StyleSheet.create({
     gap: 16,
   },
   btn: {
-    width: '100%',
+    width: '50%',
     borderWidth: 1,
     borderColor: Colors.cerulean,
-    paddingVertical: 14,
-    paddingHorizontal: 24,
+    paddingVertical: 7,
+    paddingHorizontal: 12,
     backgroundColor: Colors.bgPanel,
   },
   btnText: {
     fontFamily: 'SpaceMono',
-    fontSize: 14,
+    fontSize: 7,
     color: Colors.cerulean,
     textAlign: 'center',
     letterSpacing: 2,
