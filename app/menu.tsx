@@ -1,4 +1,4 @@
-import { View, Text, TouchableOpacity, StyleSheet, Dimensions } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, Dimensions, ImageBackground } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Colors } from '@/constants/theme';
 import { useGameStore } from '@/store/gameStore';
@@ -19,7 +19,9 @@ export default function MenuScreen() {
   const xpPct = Math.min(jogador.xp / xpNecessario, 1);
 
   return (
-    <View style={styles.container}>
+    <ImageBackground source={require('@/assets/images/Menu.jpg')} style={styles.bg} resizeMode="cover">
+      <View style={styles.overlay} />
+      <View style={styles.container}>
       <View style={styles.playerCard}>
         <View style={styles.playerHeader}>
           <Text style={styles.playerName}>{jogador.nome}</Text>
@@ -86,7 +88,8 @@ export default function MenuScreen() {
       <TouchableOpacity style={styles.btnVoltar} onPress={() => { resetJogador(); router.replace('/'); }}>
         <Text style={styles.btnVoltarText}>← ABANDONAR</Text>
       </TouchableOpacity>
-    </View>
+      </View>
+    </ImageBackground>
   );
 }
 
@@ -100,7 +103,9 @@ function MenuItem({ label, desc, onPress, cor }: any) {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: Colors.bg, padding: 24, gap: 16 },
+  bg: { flex: 1 },
+  overlay: { ...StyleSheet.absoluteFillObject, backgroundColor: 'rgba(10,0,15,0.55)' },
+  container: { flex: 1, padding: 24, gap: 16 },
   playerCard: {
     borderWidth: 1,
     borderColor: Colors.border,

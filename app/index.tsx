@@ -1,7 +1,7 @@
 import { Colors } from '@/constants/theme';
 import { useRouter } from 'expo-router';
 import { useEffect, useState } from 'react';
-import { Dimensions, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Dimensions, ImageBackground, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import Animated, { useAnimatedStyle, useSharedValue, withRepeat, withSequence, withTiming } from 'react-native-reanimated';
 
 const { width } = Dimensions.get('window');
@@ -23,7 +23,7 @@ export default function HomeScreen() {
   const glowStyle = useAnimatedStyle(() => ({ opacity: glowOpacity.value }));
 
   return (
-    <View style={styles.container}>
+    <ImageBackground source={require('@/assets/images/Menu.jpg')} style={styles.container} resizeMode="contain">
       <View style={styles.topDecor} />
 
       <View style={styles.titleContainer}>
@@ -43,14 +43,13 @@ export default function HomeScreen() {
       </View>
 
       <View style={styles.bottomDecor} />
-    </View>
+    </ImageBackground>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.bg,
     alignItems: 'center',
     justifyContent: 'space-between',
     paddingVertical: 60,
